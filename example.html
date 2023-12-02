@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 style = "text-align:center">Расписание занятий</h1>
+<table class = "timetable" border="1" cellspacing="1" cellpadding="1">
+    <tr class ="Glavn">
+        <th>Занятие</th>
+        <th>Расписание</th>
+        <th>Всего мест</th>
+        <th>Занято</th>
+    </tr>
+</table>
+<script  src = "DataLessons.js"></script>
+<script>
+     //localStorage.clear();
+    class Lesson{
+        constructor(Obj){
+           this.id = Obj.id;
+           this.name = Obj.name;
+           this.time = Obj.time;
+           this.maxParticipants = Obj.maxParticipants;
+           this.currentParticipants=Obj.currentParticipants;
+           const tableLess = document.querySelector(".timetable");
+           tableLess.insertAdjacentHTML('beforeend', `<tr><td>${this.name}</td><td>${this.time}</td><td>${this.maxParticipants}</td><td class = "student">${this.currentParticipants}</td>
+            </tr>`);
+           this.Sub = document.createElement('button');
+           this.Sub.classList.add(`${this.id}`);
+           this.Sub.innerHTML="Записаться";
+           this.Sub.addEventListener('click',function(e){
+           const stud = e.target.parentNode.querySelector('.student');
+           localStorage.setItem(e.target.className+"Out","false");
+            e.target.nextElementSibling.hidden = JSON.parse(localStorage.getItem(e.target.className+"Out"));
+            if(Number(stud.textContent)<Number(stud.previousElementSibling.textContent)){
+            stud.textContent = Number(stud.textContent)+1;
+            ChangeLs("+",e.target.className);
+            if(Number(stud.textContent)==Number(stud.previousElementSibling.textContent)){e.target.disabled = true;}}
+           });
+    
+           this.Out = document.createElement('button');
+           this.Out.classList.add(`${this.id}`);
+           this.Out.innerHTML="Отписаться";
+           if(localStorage.getItem(`${this.id}`+'Out')==null){
+            localStorage.setItem(`${this.id}`+'Out',"true");
+        }
+            this.Out.hidden = JSON.parse(localStorage.getItem(`${this.id}`+'Out'));
+           this.Out.addEventListener('click',function(e){
+            localStorage.setItem(e.target.className+'Out',"true");
+            e.target.hidden = JSON.parse(localStorage.getItem(e.target.className+'Out'));
+           const stud= e.target.parentNode.querySelector('.student');           
+           if(e.target.previousElementSibling.disabled ===true)
+            e.target.previousElementSibling.disabled =false;
+            stud.textContent--;
+            ChangeLs("-",e.target.className);
+           });
+           tableLess.lastElementChild.append(this.Sub,this.Out);
+
+        }
+    }
+    function ChangeLs(act,id){
+        id-=1;
+        let Lessons = JSON.parse(localStorage.getItem("Lessons"));
+        if(act=="+"){
+            Lessons[id].currentParticipants+=1;
+        }else if(act=="-"){
+            Lessons[id].currentParticipants-=1;
+        }
+        localStorage.setItem("Lessons",JSON.stringify(Lessons));
+    }
+
+    if(localStorage.getItem("Lessons")==null){
+        localStorage.setItem("Lessons",FirstDataLessons);
+        Lessons = JSON.parse(FirstDataLessons);
+        for(Less of Lessons)
+        Less = new Lesson(Less);
+    }
+    else{
+       Lessons = JSON.parse(localStorage.getItem("Lessons"));
+        for(Less of Lessons)
+        Less = new Lesson(Less);
+    }
+    
+</script>
+</body>
+</html>
